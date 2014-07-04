@@ -1,0 +1,32 @@
+{
+  "name": "electricfoosball",
+  "version": "0.0.0",
+  "description": "Electric Foosball Table",
+  "main": "app.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rayui/electricfoosball.git"
+  },
+  "keywords": [
+    "foosball",
+    "node",
+    "IR"
+  ],
+  "author": "Ray Brooks, Nick Campbell",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rayui/electricfoosball/issues"
+  },
+  "homepage": "https://github.com/rayui/electricfoosball",
+  "devDependencies": {
+    "express": "^4.4.5",
+    "serial": "0.0.6",
+    "underscore": "^1.6.0"
+  }
+}
