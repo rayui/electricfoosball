@@ -59,7 +59,12 @@ RFIDController.prototype.init = function() {
 
   this.serial.on('open', this.configureSAM.bind(this));
 	this.on('configured', this.initRFIDReader.bind(this));	
-	this.serial.on('data', this.rfidParser.data.bind(this.rfidParser));
+	this.serial.on('data', function(data) {
+		if (!self.ready) {
+			return;
+		}
+		self.rfidParser.data.call(self.rfidParser, data);
+	});
 	this.rfidParser.on('card', this.emitCard.bind(this));
 
 };
@@ -99,6 +104,7 @@ RFIDController.prototype.configureSAM = function(callback) {
 };
 
 RFIDController.prototype.initRFIDReader = function() {
+
 	var self = this;
 	var len = 0x04;
 	var lenCheckSum = lengthCheckSum(len);
@@ -115,6 +121,7 @@ RFIDController.prototype.initRFIDReader = function() {
 	dataTX = checksum(dataTX);
 
 	this.sendTX(dataTX, function() {
+		self.ready = true;
 		self.emit('initialized');
 	});
 	
@@ -122,13 +129,17 @@ RFIDController.prototype.initRFIDReader = function() {
 
 RFIDController.prototype.emitCard = function(card) {
 	var self = this;
+
 	if (Date.now() - this.lastIdTime > 500) {
+		this.ready = false;
 		this.serial.flush(function() {
-			self.initRFIDReader.call(self);
-			self.lastIdTime = Date.now();
 			self.emit('card', card);
+			this.lastIdTime = Date.now();
 		});
 	}
+			
+	self.initRFIDReader.call(self);
+
 };
 
 

@@ -14,41 +14,70 @@ util.inherits(RFIDParser, events.EventEmitter);
 
 RFIDParser.prototype.init = function() {
 	this.stream = new Buffer(0);
+	this.deadMansFlag = null;
+	this.idFlag = false;
 };
 
 RFIDParser.prototype.data = function(data) {
 	var self = this;
+	var now = this.deadMansFlag = Date.now();
 
 	this.stream = this.stream.concat(this.stream, data);
+
+	setTimeout(function() {
+		if (now === self.deadMansFlag) {
+			self.processMessages.apply(self);
+		}
+	}, 100);
+
+}
+
+RFIDParser.prototype.getNextDelim = function(start) {
+	var nextDelim = this.stream.indexOf(MESSAGE_DELIMITER, start + 1);
+	return nextDelim >= 0 ? nextDelim : this.stream.length;
+}
+
+RFIDParser.prototype.processMessages = function() {
 	var msgStart = this.stream.indexOf(MESSAGE_DELIMITER, 0);
-	var msgEnd = this.stream.indexOf(MESSAGE_DELIMITER, msgStart + 1);
+	var msgEnd = this.getNextDelim(msgStart);
 
 	//whiel we have messages in the stream
-	while (msgStart >= 0 && msgEnd >= 0) {
-	
+	while (msgStart >= 0) {
+
 		var message = this.stream.slice(msgStart, msgEnd);
 		//remove from 0 to end of message from stream
 		
 		this.stream = this.stream.slice(msgEnd);
 		this.processMessage(message);	
-	
+
 		msgStart = this.stream.indexOf(MESSAGE_DELIMITER);
-		msgEnd = this.stream.length > 0 ? this.stream.indexOf(MESSAGE_DELIMITER, 1) : -1;
+		msgEnd = this.getNextDelim(msgStart); 
 	}
 
 }
 
 RFIDParser.prototype.processMessage = function(message) {
-	if(message.indexOf(CARD_ID_STRING) > 0) {
-		var id = this.readId();
-		this.stream.clear();
-		this.emit('card', {id: id});
+	if(message.indexOf(CARD_ID_STRING) > 4) {
+		if (this.idFlag === false) {
+			this.idFlag = true;
+		} else {
+			this.idFlag = false;
+			var id = this.readId(message);
+			id && this.emit('card', {id: id});
+		}
 	}
 }
 
-RFIDParser.prototype.readId = function() {
-	var cardLength = this.stream.readUInt8(3);
-	return this.stream.slice(6, 6 + cardLength).toString('hex');
+RFIDParser.prototype.readId = function(message) {
+	var dataStart = 6;
+	var cardLength = message.readUInt8(3);
+	var id = null;
+
+	if (message.length >= dataStart + cardLength + 1) {
+		id = message.slice(dataStart, dataStart + cardLength).toString('hex');
+	}
+
+	return id;
 }
 
 exports.RFIDParser = RFIDParser;
