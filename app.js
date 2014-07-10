@@ -7,6 +7,7 @@ var path = require('path');
 var consolidate = require('consolidate');
 var app = express();
 var _ = require('underscore');
+var bodyParser = require('body-parser');
 
 require('./rfid_controller');
 
@@ -15,7 +16,7 @@ var rfidController = new RFIDController();
 
 app.engine('handlebars', consolidate.handlebars);
 app.set('views', __dirname + '/site');
-app.use(express.bodyParser());
+app.use(bodyParser);
 
 var PORT = process.argv[3] || 80;
 console.log('PORT', PORT);
@@ -54,6 +55,9 @@ var server = require('http').createServer(app);
 server.listen(PORT);
 
 rfidController.init();
+rfidController.on('card', function(card) {
+	console.log("GOT CARD WITH ID %s", card.id);
+});
 
 console.log('URL:');
 console.log('GET http://localhost:' + PORT);
