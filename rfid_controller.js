@@ -58,7 +58,7 @@ RFIDController.prototype.init = function() {
 	this.rfidParser.init();
 
   this.serial.on('open', this.configureSAM.bind(this));
-	this.on('configured', this.initRFIDReader.bind(this));	
+	this.on('configured', self.initRFIDReader.bind(self));	
 	this.serial.on('data', function(data) {
 		if (!self.ready) {
 			return;
@@ -99,7 +99,9 @@ RFIDController.prototype.configureSAM = function(callback) {
 
   this.serial.write("               ");
   this.sendTX(dataTX, function() {
-		self.emit('configured');
+		setTimeout(function() {
+			self.emit('configured');
+		}, 50);
 	});
 };
 

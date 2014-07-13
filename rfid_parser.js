@@ -28,7 +28,7 @@ RFIDParser.prototype.data = function(data) {
 		if (now === self.deadMansFlag) {
 			self.processMessages.apply(self);
 		}
-	}, 100);
+	}, 20);
 
 }
 
