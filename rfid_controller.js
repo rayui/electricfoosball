@@ -101,7 +101,7 @@ RFIDController.prototype.configureSAM = function(callback) {
   this.sendTX(dataTX, function() {
 		setTimeout(function() {
 			self.emit('configured');
-		}, 50);
+		}, 100);
 	});
 };
 

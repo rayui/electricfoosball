@@ -64,6 +64,8 @@ rfidController.on('card', function(card) {
 
 
 arduino.init();
-
+arduino.on('goalA', function() {
+	console.log("GOAL A!");
+});
 console.log('URL:');
 console.log('GET http://localhost:' + PORT);

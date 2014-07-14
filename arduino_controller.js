@@ -39,7 +39,7 @@ Arduino.prototype.disable = function() {
 }
 
 Arduino.prototype.emitGoal = function() {
-
+	this.emit('goalA');
 }
 
 exports.Arduino = Arduino;

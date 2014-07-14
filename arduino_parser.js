@@ -14,7 +14,7 @@ ArduinoParser.prototype.init = function() {
 
 ArduinoParser.prototype.processMessage = function(message) {
 	var message	= message.slice(3, 9);
-	console.log("%s", message.toString());
+	this.emit('goalA');
 }
 
 exports.Parser = ArduinoParser;
