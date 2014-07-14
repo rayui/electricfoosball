@@ -12,7 +12,10 @@ var bodyParser = require('body-parser');
 require('./rfid_controller');
 
 var RFIDController = require('./rfid_controller').RFIDController;
+var Arduino = require('./arduino_controller').Arduino;
+
 var rfidController = new RFIDController();
+var arduino = new Arduino();
 
 app.engine('handlebars', consolidate.handlebars);
 app.set('views', __dirname + '/site');
@@ -58,6 +61,9 @@ rfidController.init();
 rfidController.on('card', function(card) {
 	console.log("GOT CARD WITH ID %s", card.id);
 });
+
+
+arduino.init();
 
 console.log('URL:');
 console.log('GET http://localhost:' + PORT);
