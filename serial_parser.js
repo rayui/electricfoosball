@@ -14,6 +14,10 @@ util.inherits(SerialParser, events.EventEmitter);
 SerialParser.prototype.init = function() {
 	this.stream = new Buffer(0);
 	this.deadMansFlag = null;
+	this.lastMessage = {
+		message: "",
+		time: 0
+	};
 };
 
 SerialParser.prototype.data = function(data) {
@@ -43,8 +47,10 @@ SerialParser.prototype.processMessages = function() {
 	while (msgStart >= 0) {
 		var message = this.stream.slice(msgStart, msgEnd);
 		//remove from 0 to end of message from stream
-		
-		this.processMessage(message);	
+	
+		if (!this.debounce(message)) {
+			this.processMessage(message);	
+		}
 
 		msgStart = this.stream.indexOf(MESSAGE_DELIMITER, msgEnd);
 		msgEnd = this.getNextDelim(msgStart); 
@@ -56,6 +62,18 @@ SerialParser.prototype.processMessages = function() {
 SerialParser.prototype.processMessage = function(message) {
 	//must be overloaded
 	console.log("processMessage must be overloaded!");
+}
+
+SerialParser.prototype.debounce = function(message) {
+	var bounced = false;
+
+	var now = Date.now();
+	if (now - this.lastMessage.time < 50 /*&& message === this.lastMessage.message*/) {
+		bounced = true;
+	}
+	this.lastMessage.time = now;
+	this.lastMessage.message = message;
+	return bounced;
 }
 
 exports.Parser = SerialParser;

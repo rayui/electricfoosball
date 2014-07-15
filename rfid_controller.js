@@ -74,7 +74,9 @@ RFIDController.prototype.sendTX = function(dataTX, callback) {
   var transmitBytes = Buffer.concat([START_BYTES, dataTX, END_BYTES]);
 	this.serial.write(transmitBytes, function() {
 		if (typeof callback === "function") {
-			callback.apply(self);
+			setTimeout(function() {
+				callback.apply(self);
+			}, 50);
 		}
 	});
 
@@ -99,9 +101,7 @@ RFIDController.prototype.configureSAM = function(callback) {
 
   this.serial.write("               ");
   this.sendTX(dataTX, function() {
-		setTimeout(function() {
-			self.emit('configured');
-		}, 100);
+		self.emit('configured');
 	});
 };
 
