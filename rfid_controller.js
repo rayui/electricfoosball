@@ -31,6 +31,7 @@ var checksum = function(dataTX) {
   }
 
 	sum = 0x100 - (sum % 0x100);
+
   dataTX.writeUInt8(sum, end);
 
   return dataTX;
@@ -47,7 +48,6 @@ util.inherits(RFIDController, events.EventEmitter);
 RFIDController.prototype.init = function() {
   var self = this;
 
-	this.ready = false;
 	this.lastIdTime = Date.now();
 
   this.serial = new SerialPort(DEV_TTY, {
@@ -57,12 +57,10 @@ RFIDController.prototype.init = function() {
 	this.rfidParser = new RFIDParser();
 	this.rfidParser.init();
 
-  this.serial.on('open', this.configureSAM.bind(this));
-	this.on('configured', self.initRFIDReader.bind(self));	
+  this.serial.on('open', this.getFirmware.bind(this));
+	this.on('gotFirmware', this.configureSAM.bind(this));
+	this.on('configured', this.initRFIDReader.bind(this));	
 	this.serial.on('data', function(data) {
-		if (!self.ready) {
-			return;
-		}
 		self.rfidParser.data.call(self.rfidParser, data);
 	});
 	this.rfidParser.on('card', this.emitCard.bind(this));
@@ -80,6 +78,26 @@ RFIDController.prototype.sendTX = function(dataTX, callback) {
 		}
 	});
 
+};
+
+RFIDController.prototype.getFirmware  = function(callback) {
+  var self = this;
+	var len = 2;
+  var len_checksum = lengthCheckSum(len);
+  var dataTX = new Buffer([
+    len,
+    len_checksum,
+    0xD4,
+    0x02,
+		0x00
+	]);
+
+  dataTX = checksum(dataTX);
+
+  this.serial.write("               ");
+  this.sendTX(dataTX, function() {
+		self.emit('gotFirmware');
+	});
 };
 
 RFIDController.prototype.configureSAM = function(callback) {
@@ -123,7 +141,6 @@ RFIDController.prototype.initRFIDReader = function() {
 	dataTX = checksum(dataTX);
 
 	this.sendTX(dataTX, function() {
-		self.ready = true;
 		self.emit('initialized');
 	});
 	
@@ -133,7 +150,6 @@ RFIDController.prototype.emitCard = function(card) {
 	var self = this;
 
 	if (Date.now() - this.lastIdTime > 500) {
-		this.ready = false;
 		this.serial.flush(function() {
 			self.emit('card', card);
 			this.lastIdTime = Date.now();
