@@ -25,7 +25,7 @@ Arduino.prototype.init = function(pin) {
 	var self = this;
 
 	this.parser = new ArduinoParser();
-	this.parser.init();
+	this.parser.init(5000);
 
   this.serial = new SerialPort(DEV_TTY, {
     baudrate: BAUD_RATE

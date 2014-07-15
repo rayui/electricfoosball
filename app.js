@@ -12,6 +12,7 @@ var audio = new Audio();
 
 rfidController.init();
 rfidController.on('card', function(card) {
+	audio.play('action');
 	console.log("GOT CARD WITH ID %s", card.id);
 });
 

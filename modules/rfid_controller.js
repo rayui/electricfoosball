@@ -53,7 +53,7 @@ RFIDController.prototype.init = function() {
   });
 
 	this.rfidParser = new RFIDParser();
-	this.rfidParser.init();
+	this.rfidParser.init(1000);
 
   this.serial.on('open', this.getFirmware.bind(this));
 	this.on('gotFirmware', this.configureSAM.bind(this));
@@ -70,9 +70,7 @@ RFIDController.prototype.sendTX = function(dataTX, callback) {
   var transmitBytes = Buffer.concat([START_BYTES, dataTX, END_BYTES]);
 	this.serial.write(transmitBytes, function() {
 		if (typeof callback === "function") {
-			setTimeout(function() {
-				callback.apply(self);
-			}, 50);
+			callback.apply(self);
 		}
 	});
 
@@ -149,9 +147,9 @@ RFIDController.prototype.emitCard = function(card) {
 
 	this.serial.flush(function() {
 		self.emit('card', card);
+		self.initRFIDReader.call(self);
 	});
 			
-	self.initRFIDReader.call(self);
 
 };
 

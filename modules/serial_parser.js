@@ -11,13 +11,10 @@ var SerialParser = function() {
 
 util.inherits(SerialParser, events.EventEmitter);
 
-SerialParser.prototype.init = function() {
+SerialParser.prototype.init = function(debounceTime) {
 	this.stream = new Buffer(0);
 	this.deadMansFlag = null;
-	this.lastMessage = {
-		message: "",
-		time: 0
-	};
+	this.debounceTime = debounceTime || 50;
 };
 
 SerialParser.prototype.data = function(data) {
@@ -65,15 +62,8 @@ SerialParser.prototype.processMessage = function(message) {
 }
 
 SerialParser.prototype.debounce = function(message) {
-	var bounced = false;
-
-	var now = Date.now();
-	if (now - this.lastMessage.time < 50 /*&& message === this.lastMessage.message*/) {
-		bounced = true;
-	}
-	this.lastMessage.time = now;
-	this.lastMessage.message = message;
-	return bounced;
+	//can be overloaded
+	return false;
 }
 
 exports.Parser = SerialParser;

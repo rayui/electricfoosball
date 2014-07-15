@@ -11,7 +11,8 @@ var RFIDParser = function() {
 util.inherits(RFIDParser, SerialParser.Parser);
 
 RFIDParser.prototype.init = function() {
-	SerialParser.Parser.prototype.init.apply(this);
+	SerialParser.Parser.prototype.init.apply(this, arguments);
+	this.lastCardIDTime = 0;
 };
 
 RFIDParser.prototype.processMessage = function(message) {
@@ -30,5 +31,19 @@ RFIDParser.prototype.readId = function(message) {
 
 	return id;
 }
+
+RFIDParser.prototype.debounce = function(message) {
+
+	var now = Date.now();
+	if ( message.indexOf(CARD_ID_STRING) > 4) {
+		this.lastCardIdTime = now;
+		if (now - this.lastCardIDTime < this.debounceTime) { 
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 
 exports.RFIDParser = RFIDParser;

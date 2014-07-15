@@ -6,7 +6,10 @@ var lame = require('lame');
 var Speaker = require('speaker');
 
 var files = {
-	goal: 'whistle'
+	goal: 'whistle',
+	action: 'beep-06',
+	userLogin: 'beep-07',
+	error: 'beep-09'
 };
 
 var getFilename = function(name) {
