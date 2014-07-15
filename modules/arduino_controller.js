@@ -8,6 +8,13 @@ var _ = require('underscore');
 var SerialPort = require('serialport').SerialPort;
 var ArduinoParser = require('./arduino_parser').Parser;
 
+var createGoalData = function(side) {
+	return {
+		side: side,
+		time: new Date(Date.now()).toString()
+	}
+}
+
 var Arduino = function() {
 
 }
@@ -27,7 +34,8 @@ Arduino.prototype.init = function(pin) {
 	this.serial.on('data', function(data) {
 		self.parser.data.call(self.parser, data);
 	});
-	this.parser.on('goalA', this.emitGoal.bind(this));
+	this.parser.on('goalA', this.emitGoalA.bind(this));
+	this.parser.on('goalB', this.emitGoalB.bind(this));
 }
 
 Arduino.prototype.enable = function() {
@@ -38,8 +46,12 @@ Arduino.prototype.disable = function() {
 
 }
 
-Arduino.prototype.emitGoal = function() {
-	this.emit('goalA');
+Arduino.prototype.emitGoalA = function() {
+	this.emit('goal', createGoalData(0));
+}
+
+Arduino.prototype.emitGoalB = function() {
+	this.emit('goal', createGoalData(1));
 }
 
 exports.Arduino = Arduino;
