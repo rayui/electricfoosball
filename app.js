@@ -9,10 +9,8 @@ var app = express();
 var _ = require('underscore');
 var bodyParser = require('body-parser');
 
-require('./rfid_controller');
-
-var RFIDController = require('./rfid_controller').RFIDController;
-var Arduino = require('./arduino_controller').Arduino;
+var RFIDController = require('./js/rfid_controller').RFIDController;
+var Arduino = require('./js/arduino_controller').Arduino;
 
 var rfidController = new RFIDController();
 var arduino = new Arduino();
