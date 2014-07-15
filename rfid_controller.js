@@ -48,8 +48,6 @@ util.inherits(RFIDController, events.EventEmitter);
 RFIDController.prototype.init = function() {
   var self = this;
 
-	this.lastIdTime = Date.now();
-
   this.serial = new SerialPort(DEV_TTY, {
     baudrate: BAUD_RATE
   });
@@ -149,12 +147,9 @@ RFIDController.prototype.initRFIDReader = function() {
 RFIDController.prototype.emitCard = function(card) {
 	var self = this;
 
-	if (Date.now() - this.lastIdTime > 500) {
-		this.serial.flush(function() {
-			self.emit('card', card);
-			this.lastIdTime = Date.now();
-		});
-	}
+	this.serial.flush(function() {
+		self.emit('card', card);
+	});
 			
 	self.initRFIDReader.call(self);
 
