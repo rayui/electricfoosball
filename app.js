@@ -12,8 +12,7 @@ var audio = new Audio();
 
 rfidController.init();
 rfidController.on('card', function(card) {
-	audio.play('action');
-	console.log("GOT CARD WITH ID %s", card.id);
+	game.signUp(card);
 });
 
 arduino.init();
@@ -24,6 +23,14 @@ arduino.on('goal', function(goal) {
 game.init();
 game.on('goal', function() {
 	audio.play('goal');
+});
+game.on('newPlayer', function() {
+	console.log('login');
+	audio.play('userLogin');
+});
+game.on('error', function() {
+	console.log('error')
+	audio.play('error');
 });
 
 audio.init();
