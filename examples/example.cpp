@@ -129,18 +129,6 @@ uint8_t init(uint8_t *UID , uint8_t *ATQ)   //! Request InListPassive
 		return 1;
 	}
 }
-
-void printData(uint8_t *data) {
-	int i;
-	for (i = 0; i < 35; i++)
-	{
-		if (i > 0) fprintf(stderr, ":");
-		fprintf(stderr, "%02X", data[i]);
-	}
-	fprintf(stderr, "\n\n");
-}
-
-
 //**********************************************************************
 //!A block must be authenticated before read and write operations
 uint8_t authenticate(uint8_t *UID, uint8_t blockAddress, uint8_t *keyAccess)
@@ -315,8 +303,6 @@ void getData(uint8_t outLength)
 	for (int i=5; i < outLength; i++) {
 		dataRX[i] = Serial.read();//read data from the module.
 	}
-
-	printData(dataRX);
 }
 //**********************************************************************
 //!Calculates the checksum and stores it in dataTX buffer
@@ -341,4 +327,3 @@ int main (){
 	}
 	return (0);
 }
-
