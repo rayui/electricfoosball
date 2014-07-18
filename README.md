@@ -24,12 +24,20 @@ Setup Instructions
 	- set hostname to foosball
 	- adjust GPU memory split to 16
 	- enable SSH
+	- change password to memorable phrase
 
 * Install required software
 	- sudo apt-get install avahi-daemon nginx git
 
 * Install required libraries
-	- ?
+	- sudo apt-get install libasound2-dev
+
+* Enable UART port for RFID
+	- sudo mount -o rw,remount /boot
+	- remove the following characters from /boot/cmdline.txt
+	- dwc_otg.lpm_enable=0 console=tty1 $
+	- comment the following line in /etc/inittab
+	- T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100
 
 * Install Node
 cd /tmp
@@ -51,4 +59,7 @@ cd foosball
 ** you may have to install them manually
 npm update
 npm install 
+
+* Reboot pi
+
 
