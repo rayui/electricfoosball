@@ -19,6 +19,9 @@ arduino.init();
 arduino.on('goal', function(goal) {
 	game.goal(goal);
 });
+arduino.on('button', function(button) {
+	game.button(button);
+});
 
 game.init();
 game.on('goal', function() {

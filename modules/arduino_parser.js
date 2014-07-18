@@ -18,26 +18,30 @@ ArduinoParser.prototype.init = function() {
 };
 
 ArduinoParser.prototype.processMessage = function(message) {
-	var message	= message.slice(3, 9);
-	this.emit('goalA');
-}
-
-ArduinoParser.prototype.debounce = function(message) {
-	var now = Date.now();
-	if (message.length < 10) {
-		return true;
-	}
-	if (now - this.lastMessage.time < this.debounceTime &&
-		message.compare(this.lastMessage.message) === 0)
-	{
-		this.lastMessage.message = message;
-		return true;
-	}
-	
-	this.lastMessage.time = now;
-	this.lastMessage.message = message;
-
-	return false;
+  var message	= message.slice(3, message.length - 2).toString();
+	switch(message) {
+	  case 'GOAL_A':
+		this.emit('goalA');
+		break;
+	  case 'GOAL_B':
+		this.emit('goalB');
+		break;
+	  case 'BTN_A':
+		this.emit('buttonA');
+		break;
+	  case 'BTN_B':
+		this.emit('buttonB');
+		break;
+	  case 'BTN_C':
+		this.emit('buttonC');
+		break;
+	  case 'BTN_D':
+		this.emit('buttonD');
+		break;
+	  default:
+		console.log("NO EVENT MATCH");
+		break;        
+  }
 }
 
 exports.Parser = ArduinoParser;

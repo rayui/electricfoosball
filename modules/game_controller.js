@@ -18,6 +18,12 @@ Game.prototype.goal = function(data) {
 	this.emit('goal');
 }
 
+Game.prototype.button = function(data) {
+	console.log("BUTTON %d pressed", data.id);
+	this.emit('goal');
+}
+
+
 Game.prototype.signUp = function(card) {
 	console.log("GOT CARD WITH ID %s", card.id);
 

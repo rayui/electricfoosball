@@ -36,6 +36,10 @@ Arduino.prototype.init = function(pin) {
 	});
 	this.parser.on('goalA', this.emitGoalA.bind(this));
 	this.parser.on('goalB', this.emitGoalB.bind(this));
+	this.parser.on('buttonA', this.emitButtonA.bind(this));
+	this.parser.on('buttonB', this.emitButtonB.bind(this));
+	this.parser.on('buttonC', this.emitButtonC.bind(this));
+	this.parser.on('buttonD', this.emitButtonD.bind(this));
 }
 
 Arduino.prototype.enable = function() {
@@ -52,6 +56,22 @@ Arduino.prototype.emitGoalA = function() {
 
 Arduino.prototype.emitGoalB = function() {
 	this.emit('goal', createGoalData(1));
+}
+
+Arduino.prototype.emitButtonA = function() {
+	this.emit('button', {id: 0});
+}
+
+Arduino.prototype.emitButtonB = function() {
+	this.emit('button', {id: 1});
+}
+
+Arduino.prototype.emitButtonC = function() {
+	this.emit('button', {id: 2});
+}
+
+Arduino.prototype.emitButtonD = function() {
+	this.emit('button', {id: 3});
 }
 
 exports.Arduino = Arduino;
