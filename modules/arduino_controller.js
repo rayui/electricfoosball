@@ -1,6 +1,9 @@
 var DEV_TTY='/dev/ttyUSB0';
 var BAUD_RATE=9600;
 
+var LED_LONG = "LED_LONG\n";
+var LED_SHORT = "LED_SHORT\n";
+
 require('buffertools').extend();
 var events = require('events');
 var util = require('util');
@@ -25,7 +28,7 @@ Arduino.prototype.init = function(pin) {
 	var self = this;
 
 	this.parser = new ArduinoParser();
-	this.parser.init(5000);
+	this.parser.init();
 
   this.serial = new SerialPort(DEV_TTY, {
     baudrate: BAUD_RATE
@@ -72,6 +75,30 @@ Arduino.prototype.emitButtonC = function() {
 
 Arduino.prototype.emitButtonD = function() {
 	this.emit('button', {id: 3});
+}
+
+Arduino.prototype.shortBlink = function() {
+	this.serial.write(LED_SHORT);
+}
+
+Arduino.prototype.longBlink = function() {
+	this.serial.write(LED_LONG);
+}
+
+Arduino.prototype.errorBlink = function() {
+	var self = this;
+	this.serial.write(LED_SHORT);
+	setTimeout(function() {
+		self.serial.write(LED_SHORT);
+	}, 500);
+}
+
+Arduino.prototype.enableBeam = function() {
+	this.serial.write("ENABLE_BEAM\n");
+}
+
+Arduino.prototype.disableBeam = function() {
+	this.serial.write("DISABLE_BEAM\n");
 }
 
 exports.Arduino = Arduino;

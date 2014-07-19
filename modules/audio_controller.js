@@ -7,8 +7,8 @@ var Speaker = require('speaker');
 
 var files = {
 	goal: 'whistle',
-	action: 'beep-06',
-	userLogin: 'beep-07',
+	action: 'beep-07',
+	userLogin: 'beep-06',
 	error: 'beep-09'
 };
 
