@@ -12,9 +12,21 @@ var AWAITING_PLAYER = 0;
 var AWAITING_SIDE = 10;
 var AWAITING_START = 20;
 var PLAYING = 30;
+var ABORTING = 60;
 
 var MIN_PLAYERS = 2;
 var MAX_PLAYERS = 4;
+
+var validTeams = function(players) {
+	if (players.length >= MIN_PLAYERS &&
+			players.length < MAX_PLAYERS &&
+			_.findWhere(players, {side:0}) &&
+			_.findWhere(players, {side:1})
+			) {
+		return true;
+	}
+	return false;
+}
 
 var Game = function() {
 
@@ -30,7 +42,6 @@ Game.prototype.init = function() {
 
 Game.prototype.goal = function(data) {
 	if (this.state === PLAYING) {
-		console.log("GOAL for team %d at %s", data.side, data.time);
 		this.emit('goal', data);
 	}
 }
@@ -44,11 +55,7 @@ Game.prototype.button = function(button) {
 		}
 	} else if (this.state < PLAYING) {
 		if (button.id === BTN_START) {
-			if (this.players.length >= MIN_PLAYERS &&
-					this.players.length < MAX_PLAYERS &&
-					_.findWhere(this.players, {side:0}).id &&
-					_.findWhere(this.players, {side:1}).id
-					) {
+			if (validTeams(this.players)) {
 				this.start();
 			} else {
 				this.emit('error');
@@ -62,10 +69,15 @@ Game.prototype.button = function(button) {
 		}
 	} else if (this.state === PLAYING) {
 		if (button.id === BTN_CANCEL) {
-			this.players = [];
-			this.newPlayerId = null;
-			this.state = AWAITING_PLAYER;
-			this.emit('reset');
+			this.state = ABORTING;
+			this.emit('aborting');
+			setTimeout(this.resume.bind(this), 5000);
+		}
+	} else if (this.state === ABORTING) {
+		if (button.id === BTN_START) {
+			this.reset();
+		} else if (button.id === BTN_CANCEL) {
+			this.resume();
 		}
 	}
 }
@@ -75,12 +87,9 @@ Game.prototype.addPlayerToTeam = function(team) {
 	this.players.push(player);
 	this.state = AWAITING_PLAYER;
 	this.emit('newPlayer', player);
-	console.log('added player to game %j', this.players[this.players.length - 1]);
 }
 
 Game.prototype.processCard = function(card) {
-  console.log("GOT CARD WITH ID %s", card.id);
-
   if (this.state === AWAITING_PLAYER) {
 		if (!_.findWhere(this.players, {id: card.id})) {
 			this.newPlayerId = card.id;
@@ -96,14 +105,30 @@ Game.prototype.processCard = function(card) {
 Game.prototype.start = function() {
 	this.state = PLAYING;
 	this.emit('started');
-	console.log('started game with players %j', this.players);
 }
 
 Game.prototype.stop = function() {
 	this.players = [];
 	this.state = AWAITING_PLAYER;
 	this.emit('stopped');
-	console.log('stopped game');
+}
+
+Game.prototype.reset = function() {
+	this.players = [];
+	this.newPlayerId = null;
+	this.state = AWAITING_PLAYER;
+	this.emit('reset');
+}
+
+Game.prototype.resume = function() {
+	if (this.state === ABORTING) {
+		if (validTeams(this.players)) {
+			this.state = PLAYING;
+			this.emit('resumed');
+		} else {
+			this.reset();
+		}
+	}
 }
 
 exports.Game = Game;

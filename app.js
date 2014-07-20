@@ -52,16 +52,22 @@ game.on('error', function() {
 	arduino.disableBeam();
 	arduino.errorBlink();
 });
+game.on('aborting', function() {
+	console.log('aborting game');
+	arduino.errorBlink();
+	audio.play('error');
+});
+game.on('resumed', function() {
+	console.log('resume game');
+	audio.play('action');
+	arduino.enableBeam();
+});
 game.on('reset', function() {
 	console.log('reset game');
 	audio.play('error');
 	arduino.disableBeam();
-	arduino.errorBlink();
+	arduino.longBlink();
 });
 
 audio.init();
 
-//server.init(process.argv[2] || 80);
-arduino.once('button', function() {
-	rfidController.emit('card', {id:1192138132});
-});
