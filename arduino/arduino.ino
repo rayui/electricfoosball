@@ -17,17 +17,19 @@ const byte GOAL_LED_PIN = 5;
 const byte UI_LED_PIN = 6;
 const byte GOAL_A_SENSOR_PIN = 2;
 const byte GOAL_B_SENSOR_PIN = 3;
-const byte BTN_A_PIN = 8;
+const byte BTN_A_PIN = 11;
 const byte BTN_B_PIN = 9;
-const byte BTN_C_PIN = 11;
+const byte BTN_C_PIN = 8;
 const byte BTN_D_PIN = 12;
 
-const long GOAL_DEBOUNCE_TIME = 5000;
-const long BTN_DEBOUNCE_TIME = 50;
+const long GOAL_DEBOUNCE_MAX_TIME = 4000;
+const long DEBOUNCE_BUTTON_TIME = 50;
 
-volatile int goalAState = HIGH;
-volatile int goalBState = HIGH;
+int goalAState = false;
+int goalBState = false;
 
+long goalADebounceTime = millis();
+long goalBDebounceTime = millis();
 long goalATime = millis();
 long goalBTime = millis();
 
@@ -44,14 +46,6 @@ long buttonTimeD = millis();
 String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 
-void goalA() {
-  goalAState = true;
-}
-
-void goalB() {
-  goalBState = true;
-}
-
 void sendSerial(const char *message) {
   Serial.write(MSG_DELIM, 3);
   Serial.write(message);
@@ -59,21 +53,11 @@ void sendSerial(const char *message) {
   Serial.println();
 }
 
-int debounceGoal(long* lastTime) {
-  long now = millis();
-  
-  if (now - *lastTime < GOAL_DEBOUNCE_TIME) {
-    return true; 
-  }
-  *lastTime = now;
-  return false;
-}
-
-int debounceButton(const byte* pin, int* previousState, long* lastTime) {
+int debounce(const byte* pin, int* previousState, long* lastTime) {
   long now = millis();
   int currentState = digitalRead(*pin);
     
-  if (now - *lastTime > BTN_DEBOUNCE_TIME &&  //is greater than max bounce time
+  if (now - *lastTime > DEBOUNCE_BUTTON_TIME &&  //is greater than max bounce time
     currentState != *previousState         //is not same as previous state 
   ) {
     //button has been pushed for real
@@ -106,15 +90,13 @@ void disableLED() {
 void enableBeam() {
   goalATime = millis();
   goalBTime = millis();
-  attachInterrupt(0, goalA, FALLING);
-  attachInterrupt(1, goalB, FALLING);
+  goalADebounceTime = millis();
+  goalBDebounceTime = millis();
   noTone(UI_LED_PIN);
   tone (GOAL_LED_PIN, 38000);
 }
 
 void disableBeam() {
-  detachInterrupt(0);
-  detachInterrupt(1);
   noTone(GOAL_LED_PIN);
 }
 
@@ -153,34 +135,41 @@ void setup() {
 }
 
 void loop() {
-  if (goalAState == true) {
-    if (!debounceGoal(&goalATime)) {
-      sendSerial(GOAL_A_STRING);
+  
+  if (!debounce(&GOAL_A_SENSOR_PIN, &goalAState, &goalADebounceTime)) {
+    goalAState = !goalAState;
+    if (goalAState) {
+      if (goalADebounceTime - goalATime > GOAL_DEBOUNCE_MAX_TIME) {
+        goalATime = goalADebounceTime;
+        sendSerial(GOAL_A_STRING);
+      }
     }
-    goalAState = false;
-  } else if (goalBState == true) {
-    if (!debounceGoal(&goalBTime)) {
-      sendSerial(GOAL_B_STRING);
+  } else if (!debounce(&GOAL_B_SENSOR_PIN, &goalBState, &goalBDebounceTime)) {
+    goalBState = !goalBState;
+    if (goalBState) {
+      if (goalBDebounceTime - goalBTime > GOAL_DEBOUNCE_MAX_TIME) {
+        goalBTime = goalBDebounceTime;
+        sendSerial(GOAL_B_STRING);
+      }
     }
-    goalBState = false;
   }
   
-  if (!debounceButton(&BTN_A_PIN, &buttonStateA, &buttonTimeA)) {
+  if (!debounce(&BTN_A_PIN, &buttonStateA, &buttonTimeA)) {
     buttonStateA = !buttonStateA;
     if (buttonStateA) {
       sendSerial(BTN_A_STRING);
     }
-  } else if (!debounceButton(&BTN_B_PIN, &buttonStateB, &buttonTimeB)) {
+  } else if (!debounce(&BTN_B_PIN, &buttonStateB, &buttonTimeB)) {
     buttonStateB = !buttonStateB;
     if (buttonStateB) {
       sendSerial(BTN_B_STRING);
     }
-  } else if (!debounceButton(&BTN_C_PIN, &buttonStateC, &buttonTimeC)) {
+  } else if (!debounce(&BTN_C_PIN, &buttonStateC, &buttonTimeC)) {
     buttonStateC = !buttonStateC;
     if (buttonStateC) {
       sendSerial(BTN_C_STRING);
     }
-  } else if (!debounceButton(&BTN_D_PIN, &buttonStateD, &buttonTimeD)) {
+  } else if (!debounce(&BTN_D_PIN, &buttonStateD, &buttonTimeD)) {
     buttonStateD = !buttonStateD;
     if (buttonStateD) {
       sendSerial(BTN_D_STRING);
@@ -202,4 +191,5 @@ void loop() {
     inputString = "";
     stringComplete = false;
   }
+  
 }
