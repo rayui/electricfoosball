@@ -13,7 +13,7 @@ HTTPClient.prototype.sendPlayer = function(player) {
 	*/
 }
 
-HTTPCLient.prototype.sendGoal = function(gameId, teamString) {
+HTTPClient.prototype.sendGoal = function(gameId, teamString) {
 	//POST to /games/{game-id}/goals/{side}
 	/*
 		no payload
@@ -31,3 +31,5 @@ HTTPClient.prototype.sendTeams = function(gameId, players) {
 	}
 	*/
 }
+
+exports.HTTPClient = HTTPClient;

@@ -11,7 +11,7 @@ var audio = new Audio();
 //add RFID events
 rfidController.on('card', function(card) {
 	game.processCard(card);
-}
+});
 
 //add arduino events
 arduino.on('goal', function(goal) {

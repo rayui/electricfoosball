@@ -38,6 +38,7 @@ Game.prototype.init = function() {
   this.players = [];
   this.state = AWAITING_PLAYER;
 	this.newPlayerId = null;
+	this.startTime = null;
 }
 
 Game.prototype.goal = function(goal) {
@@ -110,6 +111,7 @@ Game.prototype.processCard = function(card) {
 
 Game.prototype.start = function() {
 	this.state = PLAYING;
+	this.startTime = Date.now();
 	this.emit('started');
 }
 
