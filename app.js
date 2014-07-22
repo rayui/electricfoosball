@@ -22,53 +22,74 @@ arduino.on('goal', function(goal) {
 arduino.on('button', function(button) {
 	game.button(button);
 });
-
+arduino.on('cancelGoal', function() {
+	game.cancelGoal();
+});
 game.init();
-game.on('goal', function() {
-	audio.play('goal');
+game.on('goal', function(goal) {
+	if (goal.side === 0) {
+		audio.play('goalA');
+	} else if (goal.side === 1) {
+		audio.play('goalB');
+	}
+	setTimeout(function() {
+		audio.play('whistle');
+	}, 1500);
 	arduino.longBlink();
 	arduino.enableBeam();
 });
 game.on('started', function() {
-	audio.play('goal');
+	setTimeout(function() {
+		audio.play('whistle');
+	}, 1500);
+	audio.play('gameStarted');
 	arduino.longBlink();
 	arduino.enableBeam();
 });
 game.on('read_rfid_card', function() {
 	arduino.shortBlink();
-	audio.play('action');
+	audio.play('selectTeam');
 });
 game.on('awaitingPlayer', function() {
 	arduino.shortBlink();
 });
-game.on('newPlayer', function() {
+game.on('newPlayer', function(player) {
 	console.log('login');
-	audio.play('userLogin');
+	if (player.side === 0) {
+		audio.play('scanA');
+	} else if (player.side === 1) {
+		audio.play('scanB');
+	}
 	arduino.longBlink();
 });
 game.on('error', function() {
 	console.log('error')
 	audio.play('error');
-	arduino.disableBeam();
 	arduino.errorBlink();
 });
 game.on('aborting', function() {
 	console.log('aborting game');
 	arduino.errorBlink();
-	audio.loop('action', -1, 500);
+	arduino.disableBeam();
+	audio.play('gameAbortOrContinue');
 });
 game.on('resumed', function() {
 	console.log('resume game');
-	audio.unloop();
+	audio.play('gameResumed');
+	arduino.longBlink();
 	arduino.enableBeam();
 });
 game.on('reset', function() {
 	console.log('reset game');
-	audio.unloop();
-	audio.play('error');
+	audio.play('gameOver');
 	arduino.disableBeam();
 	arduino.longBlink();
 });
-
+game.on('cancelGoal', function() {
+	console.log('cancelling last goal');
+	audio.play('goalCancelled');
+	arduino.longBlink();
+	arduino.enableBeam();
+});
 audio.init();
 

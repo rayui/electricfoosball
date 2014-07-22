@@ -27,6 +27,9 @@ util.inherits(Arduino, events.EventEmitter);
 Arduino.prototype.init = function(pin) {
 	var self = this;
 
+	this.lastButtonATime = Date.now();
+	this.lastButtonBTime = Date.now();
+
 	this.parser = new ArduinoParser();
 	this.parser.init();
 
@@ -62,11 +65,21 @@ Arduino.prototype.emitGoalB = function() {
 }
 
 Arduino.prototype.emitButtonA = function() {
-	this.emit('button', {id: 0});
+	this.lastButtonATime = Date.now();
+	if (this.lastButtonATime - this.lastButtonBTime > 500) {
+		this.emit('button', {id: 0});
+	} else {
+		this.emit('cancelGoal');
+	}
 }
 
 Arduino.prototype.emitButtonB = function() {
-	this.emit('button', {id: 1});
+	this.lastButtonBTime = Date.now();
+	if (this.lastButtonBTime - this.lastButtonATime > 500) {
+		this.emit('button', {id: 1});
+	} else {
+		this.emit('cancelGoal');
+	}
 }
 
 Arduino.prototype.emitButtonC = function() {

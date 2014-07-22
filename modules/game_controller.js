@@ -40,9 +40,9 @@ Game.prototype.init = function() {
 	this.newPlayerId = null;
 }
 
-Game.prototype.goal = function(data) {
+Game.prototype.goal = function(goal) {
 	if (this.state === PLAYING) {
-		this.emit('goal', data);
+		this.emit('goal', goal);
 	}
 }
 
@@ -71,7 +71,7 @@ Game.prototype.button = function(button) {
 		if (button.id === BTN_CANCEL) {
 			this.state = ABORTING;
 			this.emit('aborting');
-			setTimeout(this.resume.bind(this), 5000);
+			setTimeout(this.resume.bind(this), 7000);
 		}
 	} else if (this.state === ABORTING) {
 		if (button.id === BTN_START) {
@@ -79,6 +79,12 @@ Game.prototype.button = function(button) {
 		} else if (button.id === BTN_CANCEL) {
 			this.resume();
 		}
+	}
+}
+
+Game.prototype.cancelGoal = function() {
+	if (this.state === PLAYING) {
+		this.emit('cancelGoal');
 	}
 }
 

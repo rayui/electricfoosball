@@ -18,7 +18,9 @@ ArduinoParser.prototype.init = function() {
 };
 
 ArduinoParser.prototype.processMessage = function(message) {
-  var message	= message.slice(3, message.length - 2).toString();
+	var messageEnd = message.indexOf(new Buffer([0x00]), 3);
+	message	= message.slice(3, messageEnd).toString();
+	console.log(message);
 	switch(message) {
 	  case 'GOAL_A':
 		this.emit('goalA');
@@ -39,7 +41,7 @@ ArduinoParser.prototype.processMessage = function(message) {
 		this.emit('buttonD');
 		break;
 	  default:
-		console.log("NO EVENT MATCH");
+		console.log("NO EVENT MATCH FOR %s", message);
 		break;        
   }
 }
