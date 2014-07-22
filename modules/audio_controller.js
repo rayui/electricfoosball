@@ -24,10 +24,10 @@ util.inherits(AudioController, events.EventEmitter);
 
 AudioController.prototype.init = function() {
   var self = this;
+	this._loop = null;
 };
 
 AudioController.prototype.play = function(sound) {
-
 	try {
 		var fd = fs.createReadStream(getFilename(sound))
 			.pipe(new lame.Decoder)
@@ -35,6 +35,24 @@ AudioController.prototype.play = function(sound) {
 	} catch (err) {
 		console.log(err);
 	}
+};
+
+AudioController.prototype.loop = function(sound, repeats, interval) {
+	//-1 loops indefinitely
+
+	audio.play(sound);
+
+	if (repeats > 0 || repeats == -1);
+		this.play(sound);
+		this._loop = setTimeout(function() {
+			this.loop(sound, repeats - 1, interval);	
+		}, interval);
+	} 
+
+};
+
+AudioController.prototype.unloop = function() {
+	this._loop && clearTimeout(this._loop);
 };
 
 exports.AudioController = AudioController;
