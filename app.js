@@ -55,12 +55,11 @@ game.on('error', function() {
 game.on('aborting', function() {
 	console.log('aborting game');
 	arduino.errorBlink();
-	audio.loop('error', -1, 2000);
+	audio.loop('action', -1, 500);
 });
 game.on('resumed', function() {
 	console.log('resume game');
 	audio.unloop();
-	audio.play('action');
 	arduino.enableBeam();
 });
 game.on('reset', function() {

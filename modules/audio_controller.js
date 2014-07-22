@@ -39,13 +39,14 @@ AudioController.prototype.play = function(sound) {
 
 AudioController.prototype.loop = function(sound, repeats, interval) {
 	//-1 loops indefinitely
+	var self = this;
 
-	audio.play(sound);
+	this.play(sound);
 
-	if (repeats > 0 || repeats == -1);
+	if (repeats > 0 || repeats === -1) {
 		this.play(sound);
 		this._loop = setTimeout(function() {
-			this.loop(sound, repeats - 1, interval);	
+			self.loop.apply(self, [sound, repeats === -1 ? -1 : repeats - 1, interval]);	
 		}, interval);
 	} 
 
