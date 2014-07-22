@@ -8,12 +8,12 @@ var arduino = new Arduino();
 var game = new Game();
 var audio = new Audio();
 
-rfidController.init();
+//add RFID events
 rfidController.on('card', function(card) {
 	game.processCard(card);
-});
+}
 
-arduino.init();
+//add arduino events
 arduino.on('goal', function(goal) {
 	game.goal(goal);
 });
@@ -23,7 +23,8 @@ arduino.on('button', function(button) {
 arduino.on('cancelGoal', function() {
 	game.cancelGoal();
 });
-game.init();
+
+//add game events
 game.on('goal', function(goal) {
 	if (goal.side === 0) {
 		audio.play('goalA');
@@ -89,5 +90,9 @@ game.on('cancelGoal', function() {
 	arduino.longBlink();
 	arduino.enableBeam();
 });
+
 audio.init();
+arduino.init();
+game.init();
+rfidController.init();
 
