@@ -26,7 +26,7 @@ Setup Instructions
 	- change password to memorable phrase
 * Install required software
 
-	sudo apt-get install avahi-daemon nginx git
+	sudo apt-get install avahi-daemon git
 
 * Install required libraries
 
