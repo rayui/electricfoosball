@@ -28,10 +28,13 @@ ArduinoParser.prototype.processMessage = function(message) {
 	  case 'GOAL_B':
 		this.emit('goalB');
 		break;
-	  case 'BTN_A':
+		//intentionally backwards!
+		//need to switch the wires for left and right buttons
+		// but this is best i can do for now 
+	  case 'BTN_B':
 		this.emit('buttonA');
 		break;
-	  case 'BTN_B':
+	  case 'BTN_A':
 		this.emit('buttonB');
 		break;
 	  case 'BTN_C':
