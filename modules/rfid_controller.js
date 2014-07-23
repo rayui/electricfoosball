@@ -1,4 +1,5 @@
-var DEV_TTY = "/dev/ttyAMA0";
+//var DEV_TTY = "/dev/ttyAMA0";
+var DEV_TTY = "/home/pi/COM2";
 var BAUD_RATE = 115200;
 var START_BYTES = new Buffer([0x00, 0x00, 0xFF]);
 var END_BYTES = new Buffer([0x00]);

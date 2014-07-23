@@ -1,3 +1,5 @@
+var config = require('config');
+
 var RFIDController = require('./modules/rfid_controller').RFIDController;
 var Arduino = require('./modules/arduino_controller').Arduino;
 var Game = require('./modules/game_controller').Game;
@@ -91,8 +93,8 @@ game.on('cancelGoal', function() {
 	arduino.enableBeam();
 });
 
-audio.init();
-arduino.init();
-game.init();
-rfidController.init();
+audio.init(config.audio);
+arduino.init(config.arduino);
+game.init(config.game);
+rfidController.init(config.rfid);
 
