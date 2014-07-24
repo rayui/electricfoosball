@@ -35,7 +35,7 @@ module.exports = {
 		maxPlayers: 4
 	},
 	rfid: {
-		tty: '/home/pi/COM2',
+		tty: '/home/pi/COM3',
 		baud: 115200,
 	}
 }

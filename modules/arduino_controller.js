@@ -1,16 +1,12 @@
-//var DEV_TTY='/dev/ttyUSB0';
-//var DEV_TTY='/home/pi/COM1';
-//var BAUD_RATE=9600;
-
-var LED_LONG = "LED_LONG\n";
-var LED_SHORT = "LED_SHORT\n";
-
 require('buffertools').extend();
 var events = require('events');
 var util = require('util');
 var _ = require('underscore');
 var SerialPort = require('serialport').SerialPort;
 var ArduinoParser = require('./arduino_parser').Parser;
+
+var LED_LONG = "LED_LONG\n";
+var LED_SHORT = "LED_SHORT\n";
 
 var createGoalData = function(side) {
 	return {

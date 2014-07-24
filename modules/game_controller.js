@@ -51,7 +51,7 @@ Game.prototype.button = function(button) {
 		}
 	} else if (this.state < PLAYING) {
 		if (button.id === this.buttons.start) {
-			if (validTeams(this.players)) {
+			if (this.validTeams(this.players)) {
 				this.start();
 			} else {
 				this.emit('error');

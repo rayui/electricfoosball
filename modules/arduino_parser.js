@@ -3,6 +3,17 @@ var _ = require('underscore');
 var SerialParser = require('./serial_parser');
 var buffertools = require('buffertools').extend();
 
+var lastIndexOf = function(buffer, charBuff) {
+	buffer.reverse();
+	var i = buffer.indexOf(charBuff);
+	buffer.reverse();
+	if (i === -1) {
+		return -1;
+	}
+	i = buffer.length - i;
+	return i;
+}
+
 var ArduinoParser = function() {
 
 }
@@ -18,10 +29,10 @@ ArduinoParser.prototype.init = function() {
 };
 
 ArduinoParser.prototype.processMessage = function(message) {
-	var messageEnd = message.indexOf(new Buffer([0x00]), 3);
-	message	= message.slice(3, messageEnd).toString();
-	console.log(message);
-	switch(message) {
+	var messageEnd = lastIndexOf(message, new Buffer([0x00]), 3);
+	//message	= message.slice(0, messageEnd).toString();
+
+	switch(message.toString()) {
 	  case 'GOAL_A':
 		this.emit('goalA');
 		break;
