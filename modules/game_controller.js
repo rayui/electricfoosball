@@ -34,8 +34,8 @@ Game.prototype.goal = function(goal) {
 Game.prototype.validTeams = function() {
 	if (this.players.length >= this.minPlayers &&
 			this.players.length < this.maxPlayers &&
-			_.findWhere(this.players, {side:this.side0}) &&
-			_.findWhere(this.players, {side:this.side1})
+			_.findWhere(this.players, {side:this.buttons.side0}) &&
+			_.findWhere(this.players, {side:this.buttons.side1})
 			) {
 		return true;
 	}
@@ -125,7 +125,7 @@ Game.prototype.reset = function() {
 
 Game.prototype.resume = function() {
 	if (this.state === ABORTING) {
-		if (validTeams(this.players)) {
+		if (this.validTeams()) {
 			this.state = PLAYING;
 			this.emit('resumed');
 		} else {

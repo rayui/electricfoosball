@@ -5,10 +5,6 @@ var _ = require('underscore');
 var lame = require('lame');
 var Speaker = require('speaker');
 
-var getFilename = function(name) {
-	return __dirname + "/../audio/" + this.files[name] + '.mp3';
-}
-
 var AudioController = function() {
 
 };
@@ -21,9 +17,14 @@ AudioController.prototype.init = function(config) {
 	this.files = config.files;
 };
 
+AudioController.prototype.getFilename = function(name) {
+	return __dirname + "/../audio/" + this.files[name] + '.mp3';
+}
+
+
 AudioController.prototype.play = function(sound) {
 	try {
-		var fd = fs.createReadStream(getFilename(sound))
+		var fd = fs.createReadStream(this.getFilename(sound))
 			.pipe(new lame.Decoder)
 			.pipe(new Speaker);
 	} catch (err) {

@@ -1,7 +1,15 @@
 var config = require('config');
+var ENV = config.util.getEnv('NODE_ENV');
 
-var RFIDController = require('./modules/rfid_controller').RFIDController;
-var Arduino = require('./modules/arduino_controller').Arduino;
+//mock out hardware for simulation mode
+if (ENV === "simulation") {
+	var RFIDController = require('./modules/rfid_mock').RFIDController;
+	var Arduino = require('./modules/arduino_mock').Arduino;
+} else {
+	var RFIDController = require('./modules/rfid_controller').RFIDController;
+	var Arduino = require('./modules/arduino_controller').Arduino;
+}
+
 var Game = require('./modules/game_controller').Game;
 var Audio = require('./modules/audio_controller').AudioController;
 
@@ -9,6 +17,12 @@ var rfidController = new RFIDController();
 var arduino = new Arduino();
 var game = new Game();
 var audio = new Audio();
+
+if (ENV === 'simulation') {
+	var Tests = require('./test/tests.js').Tests;
+	var tests = new Tests();
+}
+
 
 //add RFID events
 rfidController.on('card', function(card) {
@@ -55,7 +69,7 @@ game.on('awaitingPlayer', function() {
 	arduino.shortBlink();
 });
 game.on('newPlayer', function(player) {
-	console.log('login');
+	console.log('login %j', player);
 	if (player.side === 0) {
 		audio.play('scanA');
 	} else if (player.side === 1) {
@@ -97,4 +111,8 @@ audio.init(config.audio);
 arduino.init(config.arduino);
 game.init(config.game);
 rfidController.init(config.rfid);
+
+if (ENV === 'simulation') {
+	tests.init(rfidController, arduino, game, audio);
+}
 
