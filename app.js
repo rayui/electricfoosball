@@ -12,11 +12,13 @@ if (ENV === "simulation") {
 
 var Game = require('./modules/game_controller').Game;
 var Audio = require('./modules/audio_controller').AudioController;
+var HTTPClient = require('./modules/http_client').HTTPClient;
 
-var rfidController = new RFIDController();
+var rfid = new RFIDController();
 var arduino = new Arduino();
 var game = new Game();
 var audio = new Audio();
+var http = new HTTPClient();
 
 if (ENV === 'simulation') {
 	var Tests = require('./test/tests.js').Tests;
@@ -25,7 +27,7 @@ if (ENV === 'simulation') {
 
 
 //add RFID events
-rfidController.on('card', function(card) {
+rfid.on('card', function(card) {
 	game.processCard(card);
 });
 
@@ -109,10 +111,11 @@ game.on('cancelGoal', function() {
 
 audio.init(config.audio);
 arduino.init(config.arduino);
+http.init(config.http);
 game.init(config.game);
-rfidController.init(config.rfid);
+rfid.init(config.rfid);
 
 if (ENV === 'simulation') {
-	tests.init(rfidController, arduino, game, audio);
+	tests.init(rfid, arduino, game, audio);
 }
 
