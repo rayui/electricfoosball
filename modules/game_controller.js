@@ -23,17 +23,23 @@ Game.prototype.init = function(config) {
   this.state = AWAITING_PLAYER;
 	this.newPlayerId = null;
 	this.startTime = null;
+	this.id = null;
 }
 
 Game.prototype.goal = function(goal) {
 	if (this.state === PLAYING) {
+		goal.gameId = this.id;
 		this.emit('goal', goal);
 	}
 }
 
 Game.prototype.validTeams = function() {
+	console.log(this.players);
+	console.log(this.minPlayers);
+	console.log(this.maxPlayers);
+
 	if (this.players.length >= this.minPlayers &&
-			this.players.length < this.maxPlayers &&
+			this.players.length <= this.maxPlayers &&
 			_.findWhere(this.players, {side:this.buttons.side0}) &&
 			_.findWhere(this.players, {side:this.buttons.side1})
 			) {
@@ -80,7 +86,7 @@ Game.prototype.button = function(button) {
 
 Game.prototype.cancelGoal = function() {
 	if (this.state === PLAYING) {
-		this.emit('cancelGoal');
+		this.emit('cancelGoal', {id: this.id});
 	}
 }
 
@@ -107,7 +113,7 @@ Game.prototype.processCard = function(card) {
 Game.prototype.start = function() {
 	this.state = PLAYING;
 	this.startTime = Date.now();
-	this.emit('started');
+	this.emit('started', this.players);
 }
 
 Game.prototype.stop = function() {
@@ -121,6 +127,7 @@ Game.prototype.reset = function() {
 	this.newPlayerId = null;
 	this.state = AWAITING_PLAYER;
 	this.emit('reset');
+	this.id = null;
 }
 
 Game.prototype.resume = function() {
@@ -132,6 +139,10 @@ Game.prototype.resume = function() {
 			this.reset();
 		}
 	}
+}
+
+Game.prototype.setId = function(id) {
+	this.id = id;
 }
 
 exports.Game = Game;

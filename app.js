@@ -1,5 +1,6 @@
 var config = require('config');
 var ENV = config.util.getEnv('NODE_ENV');
+var TOKEN = process.argv[2];
 
 //mock out hardware for simulation mode
 if (ENV === "simulation") {
@@ -18,7 +19,7 @@ var rfid = new RFIDController();
 var arduino = new Arduino();
 var game = new Game();
 var audio = new Audio();
-var http = new HTTPClient();
+var httpClient = new HTTPClient();
 
 if (ENV === 'simulation') {
 	var Tests = require('./test/tests.js').Tests;
@@ -54,14 +55,16 @@ game.on('goal', function(goal) {
 	}, 1500);
 	arduino.longBlink();
 	arduino.enableBeam();
+	httpClient.sendGoal(goal);
 });
-game.on('started', function() {
+game.on('started', function(players) {
 	setTimeout(function() {
 		audio.play('whistle');
 	}, 1500);
 	audio.play('gameStarted');
 	arduino.longBlink();
 	arduino.enableBeam();
+	httpClient.createGame(players);
 });
 game.on('read_rfid_card', function() {
 	arduino.shortBlink();
@@ -78,6 +81,7 @@ game.on('newPlayer', function(player) {
 		audio.play('scanB');
 	}
 	arduino.longBlink();
+	httpClient.sendPlayer(player);
 });
 game.on('error', function() {
 	console.log('error')
@@ -109,9 +113,13 @@ game.on('cancelGoal', function() {
 	arduino.enableBeam();
 });
 
+httpClient.on('newGame', function(gameInfo) {
+	game.setId(gameInfo.id);
+});
+
 audio.init(config.audio);
 arduino.init(config.arduino);
-http.init(config.http);
+httpClient.init(config.http, TOKEN);
 game.init(config.game);
 rfid.init(config.rfid);
 

@@ -37,5 +37,10 @@ module.exports = {
 	rfid: {
 		tty: '/dev/ttyAMA0',
 		baud: 115200,
+	},
+	http: {
+		protocol: "http",
+		server: 'electric-foos.cloudapp.net',
+		port: 80
 	}
 }

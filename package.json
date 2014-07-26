@@ -36,6 +36,7 @@
     "speaker": "^0.2.1",
     "underscore": "^1.6.0",
     "config": "~0.4.37",
-    "keypress": "~0.2.1"
+    "keypress": "~0.2.1",
+    "request": "~2.39.0"
   }
 }

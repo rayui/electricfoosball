@@ -38,7 +38,7 @@ Tests.prototype.processKey = function(key) {
 			this.arduino.emitButtonD();
 			break;
 		case 'r':
-			this.rfid.emitCard({id: Math.abs(Math.random() * 10000000) });	
+			this.rfid.emitCard({id: parseInt(Math.random() * 1000000000000, 10)});	
 		case 'k':
 			this.arduino.emitGoalA();
 			break;
