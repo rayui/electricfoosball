@@ -3,17 +3,6 @@ var _ = require('underscore');
 var SerialParser = require('./serial_parser');
 var buffertools = require('buffertools').extend();
 
-var lastIndexOf = function(buffer, charBuff) {
-	buffer.reverse();
-	var i = buffer.indexOf(charBuff);
-	buffer.reverse();
-	if (i === -1) {
-		return -1;
-	}
-	i = buffer.length - i;
-	return i;
-}
-
 var ArduinoParser = function() {
 
 }
@@ -29,23 +18,20 @@ ArduinoParser.prototype.init = function() {
 };
 
 ArduinoParser.prototype.processMessage = function(message) {
-	var messageEnd = lastIndexOf(message, new Buffer([0x00]), 3);
-	//message	= message.slice(0, messageEnd).toString();
-
-	switch(message.toString()) {
+	var messageEnd = message.indexOf(new Buffer([0x00]), 3);
+	message	= message.slice(3, messageEnd).toString();
+	console.log(message);
+	switch(message) {
 	  case 'GOAL_A':
 		this.emit('goalA');
 		break;
 	  case 'GOAL_B':
 		this.emit('goalB');
 		break;
-		//intentionally backwards!
-		//need to switch the wires for left and right buttons
-		// but this is best i can do for now 
-	  case 'BTN_B':
+	  case 'BTN_A':
 		this.emit('buttonA');
 		break;
-	  case 'BTN_A':
+	  case 'BTN_B':
 		this.emit('buttonB');
 		break;
 	  case 'BTN_C':

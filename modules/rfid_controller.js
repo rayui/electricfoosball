@@ -1,4 +1,5 @@
-//var DEV_TTY = "/dev/ttyAMA0";
+var DEV_TTY = "/dev/ttyAMA0";
+var BAUD_RATE = 115200;
 var START_BYTES = new Buffer([0x00, 0x00, 0xFF]);
 var END_BYTES = new Buffer([0x00]);
 var CARD_ID_STRING = new Buffer([0xD5, 0x4B, 0x01]);
@@ -44,11 +45,11 @@ var RFIDController = function() {
 
 util.inherits(RFIDController, events.EventEmitter);
 
-RFIDController.prototype.init = function(config) {
+RFIDController.prototype.init = function() {
   var self = this;
 
-  this.serial = new SerialPort(config.tty, {
-    baudrate: config.baud
+  this.serial = new SerialPort(DEV_TTY, {
+    baudrate: BAUD_RATE
   });
 
 	this.rfidParser = new RFIDParser();

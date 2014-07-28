@@ -1,12 +1,15 @@
+var DEV_TTY='/dev/ttyUSB0';
+var BAUD_RATE=9600;
+
+var LED_LONG = "LED_LONG\n";
+var LED_SHORT = "LED_SHORT\n";
+
 require('buffertools').extend();
 var events = require('events');
 var util = require('util');
 var _ = require('underscore');
 var SerialPort = require('serialport').SerialPort;
 var ArduinoParser = require('./arduino_parser').Parser;
-
-var LED_LONG = "LED_LONG\n";
-var LED_SHORT = "LED_SHORT\n";
 
 var createGoalData = function(side) {
 	return {
@@ -21,7 +24,7 @@ var Arduino = function() {
 
 util.inherits(Arduino, events.EventEmitter);
 
-Arduino.prototype.init = function(config) {
+Arduino.prototype.init = function(pin) {
 	var self = this;
 
 	this.lastButtonATime = Date.now();
@@ -30,8 +33,8 @@ Arduino.prototype.init = function(config) {
 	this.parser = new ArduinoParser();
 	this.parser.init();
 
-  this.serial = new SerialPort(config.tty, {
-    baudrate: config.baud 
+  this.serial = new SerialPort(DEV_TTY, {
+    baudrate: BAUD_RATE
   });
 	
 	this.serial.on('data', function(data) {
