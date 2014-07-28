@@ -3,6 +3,9 @@ var util = require('util');
 var _ = require('underscore');
 var request = require('request');
 
+//var querystring = require('querystring');
+//var http = require('http');
+
 var HTTPClient = function() {
 
 };
@@ -27,11 +30,11 @@ HTTPClient.prototype.postRequest = function(endpoint, payload, callback) {
 			headers: {
 				'Authorization': 'Token token=' + this.token
 			},
-			form: payload,
+			timeout: 10000,
+			followRedirect: true,
+			form: payload
 		};
 		
-	console.log("%j", reqData);
-
 	request.post(
 		reqData,
 		callback
@@ -52,9 +55,7 @@ HTTPClient.prototype.sendPlayer = function(player) {
 			rfid: player.id,
 			team: team
 		},
-		function(err, res, body) {
-			console.log("body %j", body);
-		}
+		function(err, res, body) {}
 	);
 }
 
@@ -66,11 +67,11 @@ HTTPClient.prototype.sendGoal = function(goal) {
 
 	var team = goal.side === 0 ? "silver" : "black";
 	
+	console.log("games/" + goal.gameId + "/goals/" + team);
+
 	this.postRequest("games/" + goal.gameId + "/goals/" + team,
 		{},
-		function(err, res, body) {
-			console.log("body %j", body);
-		}		
+		function(err, res, body) {}		
 	);
 }
 
@@ -90,14 +91,13 @@ HTTPClient.prototype.createGame = function(players) {
 	var silverTeam = _.chain(players).where({side: 0}).pluck('id').value().join(',');
 	var blackTeam = _.chain(players).where({side: 1}).pluck('id').value().join(',');
 
-	this.postRequest("games",
+	this.postRequest("games.json",
 		{
 			silver_team: silverTeam,
 			black_team: blackTeam		
 		},
 		function(err, res, body) {
-			console.log(res);
-			var gameId = JSON.parse(res.body).game_id;
+			var gameId = JSON.parse(res.body).id;
 			self.emit('newGame', {id: gameId});
 		}
 	);
