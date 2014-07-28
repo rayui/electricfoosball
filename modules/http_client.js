@@ -110,6 +110,8 @@ HTTPClient.prototype.cancelGoal = function(goal) {
 	this.deleteRequest("games/" + goal.id + "/goals/" + team + ".json",
 		{},
 		function(err, res, body) {
+			console.log(res.statusCode);
+
 			console.log(body);
 		}		
 	);

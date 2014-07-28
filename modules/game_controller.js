@@ -87,7 +87,9 @@ Game.prototype.button = function(button) {
 }
 
 Game.prototype.cancelGoal = function() {
-	if (this.lastGoalBy && this.state === PLAYING) {
+	console.log(this.lastGoalBy);
+
+	if (this.lastGoalBy !== null && this.state === PLAYING) {
 		this.emit('cancelGoal', {id: this.id, side: this.lastGoalBy});
 		this.lastGoalBy = null;
 	}
