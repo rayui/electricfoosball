@@ -37,14 +37,14 @@ SerialParser.prototype.getNextDelim = function(start) {
 }
 
 SerialParser.prototype.processMessages = function() {
-	var msgStart = this.stream.indexOf(MESSAGE_DELIMITER, 0) + 3;
+	var msgStart = this.stream.indexOf(MESSAGE_DELIMITER, 0);
 	var msgEnd = this.getNextDelim(msgStart);
 
 	//whiel we have messages in the stream
 	while (msgStart >= 0) {
 		var message = this.stream.slice(msgStart, msgEnd);
 		//remove from 0 to end of message from stream
-
+	
 		if (!this.debounce(message)) {
 			this.processMessage(message);	
 		}

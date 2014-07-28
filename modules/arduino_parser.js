@@ -18,9 +18,9 @@ ArduinoParser.prototype.init = function() {
 };
 
 ArduinoParser.prototype.processMessage = function(message) {
-	var messageEnd = message.indexOf(new Buffer([0x00]), 3);
+	var messageEnd = lastIndexOf(message, new Buffer([0x00]), 3) - 1;
 	message	= message.slice(3, messageEnd).toString();
-	console.log(message);
+
 	switch(message) {
 	  case 'GOAL_A':
 		this.emit('goalA');

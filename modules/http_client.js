@@ -20,7 +20,7 @@ HTTPClient.prototype.init = function(config, token) {
 }
 
 HTTPClient.prototype.postRequest = function(endpoint, payload, callback) {
-	var address = this.protocol + "://" + this.server + "/api/" + endpoint;
+	var address = this.protocol + "://" + this.server + ":" + this.port + "/api/" + endpoint;
 
 	payload.timestamp = new Date().toISOString();
 
@@ -28,13 +28,16 @@ HTTPClient.prototype.postRequest = function(endpoint, payload, callback) {
 		{
 			uri: address,
 			headers: {
-				'Authorization': 'Token token=' + this.token
+				'Authorization': 'Token token=' + this.token,
+				'Content-Type': 'application/json'
 			},
 			timeout: 10000,
 			followRedirect: true,
 			form: payload
 		};
-		
+	
+	console.log(reqData);
+	
 	request.post(
 		reqData,
 		callback
@@ -55,7 +58,9 @@ HTTPClient.prototype.sendPlayer = function(player) {
 			rfid: player.id,
 			team: team
 		},
-		function(err, res, body) {}
+		function(err, res, body) {
+			console.log(body);
+		}
 	);
 }
 
@@ -67,11 +72,13 @@ HTTPClient.prototype.sendGoal = function(goal) {
 
 	var team = goal.side === 0 ? "silver" : "black";
 	
-	console.log("games/" + goal.gameId + "/goals/" + team);
+	console.log("games/" + goal.gameId + "/goals/" + team + ".json");
 
-	this.postRequest("games/" + goal.gameId + "/goals/" + team,
+	this.postRequest("games/" + goal.gameId + "/goals/" + team + ".json",
 		{},
-		function(err, res, body) {}		
+		function(err, res, body) {
+			console.log(body);
+		}		
 	);
 }
 
@@ -97,6 +104,7 @@ HTTPClient.prototype.createGame = function(players) {
 			black_team: blackTeam		
 		},
 		function(err, res, body) {
+			console.log(body);
 			var gameId = JSON.parse(res.body).id;
 			self.emit('newGame', {id: gameId});
 		}
