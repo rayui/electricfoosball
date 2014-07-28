@@ -45,6 +45,9 @@ Tests.prototype.processKey = function(key) {
 		case 'l':
 			this.arduino.emitGoalB();
 			break;			
+		case 'j':
+			this.arduino.emitCancelGoal();
+			break;
 	}
 }
 

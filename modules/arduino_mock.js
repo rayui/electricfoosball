@@ -69,6 +69,10 @@ Arduino.prototype.emitButtonD = function() {
 	this.emit('button', {id: 3});
 }
 
+Arduino.prototype.emitCancelGoal = function() {
+	this.emit('cancelGoal');
+}
+
 Arduino.prototype.shortBlink = function() {
 	console.log(LED_SHORT);
 }

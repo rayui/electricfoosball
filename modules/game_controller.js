@@ -24,11 +24,13 @@ Game.prototype.init = function(config) {
 	this.newPlayerId = null;
 	this.startTime = null;
 	this.id = null;
+	this.lastGoalBy = null;
 }
 
 Game.prototype.goal = function(goal) {
 	if (this.state === PLAYING) {
 		goal.gameId = this.id;
+		this.lastGoalBy = goal.side; 
 		this.emit('goal', goal);
 	}
 }
@@ -85,8 +87,9 @@ Game.prototype.button = function(button) {
 }
 
 Game.prototype.cancelGoal = function() {
-	if (this.state === PLAYING) {
-		this.emit('cancelGoal', {id: this.id});
+	if (this.lastGoalBy && this.state === PLAYING) {
+		this.emit('cancelGoal', {id: this.id, side: this.lastGoalBy});
+		this.lastGoalBy = null;
 	}
 }
 
@@ -128,6 +131,7 @@ Game.prototype.reset = function() {
 	this.state = AWAITING_PLAYER;
 	this.emit('reset');
 	this.id = null;
+	this.lastGoalBy = null;
 }
 
 Game.prototype.resume = function() {

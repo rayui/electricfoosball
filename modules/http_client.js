@@ -19,11 +19,15 @@ HTTPClient.prototype.init = function(config, token) {
 	this.token = token; 
 }
 
-HTTPClient.prototype.postRequest = function(endpoint, payload, callback) {
-	var address = this.protocol + "://" + this.server + ":" + this.port + "/api/" + endpoint;
+HTTPClient.prototype.getAddress = function(endpoint) {
+	return this.protocol + "://" + this.server + ":" + this.port + "/api/" + endpoint;
+}
 
+HTTPClient.prototype.request = function(method, endpoint, payload, callback) {
 	payload.timestamp = new Date().toISOString();
-
+	
+	var address = this.getAddress(endpoint);
+	
 	var reqData = 
 		{
 			uri: address,
@@ -37,11 +41,22 @@ HTTPClient.prototype.postRequest = function(endpoint, payload, callback) {
 		};
 	
 	console.log(reqData);
-	
-	request.post(
+
+	request[method](
 		reqData,
-		callback
-	);
+		callback);
+}
+
+HTTPClient.prototype.deleteRequest = function(endpoint, payload, callback) {
+
+	this.request("del", endpoint, payload, callback);
+	
+}
+
+
+HTTPClient.prototype.postRequest = function(endpoint, payload, callback) {
+
+	this.request("post", endpoint, payload, callback);
 	
 }
 
@@ -75,6 +90,24 @@ HTTPClient.prototype.sendGoal = function(goal) {
 	console.log("games/" + goal.gameId + "/goals/" + team + ".json");
 
 	this.postRequest("games/" + goal.gameId + "/goals/" + team + ".json",
+		{},
+		function(err, res, body) {
+			console.log(body);
+		}		
+	);
+}
+
+HTTPClient.prototype.cancelGoal = function(goal) {
+	//DELETE to /games/{game-id}/goals/{side}
+	/*
+		no payload
+	*/	
+
+	var team = goal.side === 0 ? "silver" : "black";
+	
+	console.log("games/" + goal.id + "/goals/" + team + ".json");
+
+	this.deleteRequest("games/" + goal.id + "/goals/" + team + ".json",
 		{},
 		function(err, res, body) {
 			console.log(body);

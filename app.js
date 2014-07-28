@@ -106,11 +106,12 @@ game.on('reset', function() {
 	arduino.disableBeam();
 	arduino.longBlink();
 });
-game.on('cancelGoal', function() {
+game.on('cancelGoal', function(goal) {
 	console.log('cancelling last goal');
 	audio.play('goalCancelled');
 	arduino.longBlink();
 	arduino.enableBeam();
+	httpClient.cancelGoal(goal);
 });
 
 httpClient.on('newGame', function(gameInfo) {
